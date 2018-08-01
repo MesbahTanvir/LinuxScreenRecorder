@@ -33,6 +33,7 @@ string formatedTime(){
     return (string)buf;
 }
 void startRecorder(int length, int delay,string outputName){
+    system("rm .screenshot-*"); 
     int imageNumber = 0 , start_time = time(NULL);
     while(true){
         int cur_time = time(NULL);
