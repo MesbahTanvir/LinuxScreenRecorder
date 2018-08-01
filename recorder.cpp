@@ -1,9 +1,12 @@
+// sudo apt-get update
+// sudo apt-get install ffmpeg
+
 #include <bits/stdc++.h>
+#include <time.h>
 using namespace std;
 #define MAX_NAME_SIZE 1024
 
-// sudo apt-get update
-// sudo apt-get install ffmpeg
+
 
 string imageName(int num){
     char str[MAX_NAME_SIZE];
@@ -21,9 +24,18 @@ string formatImportCommand(int delayTime , int imageNumber){
     cmd += imageName(imageNumber);
     return cmd;
 }
-
+string formatedTime(){
+    time_t     now;
+    struct tm  ts;
+    char       buf[80];
+    time(&now);
+    ts = *localtime(&now);
+    strftime(buf, sizeof(buf), "%Y-%m-%d_%H:%M:%S", &ts);
+    return (string)buf;
+}
 int main(){
     int imageNumber=0,delay;
+    string outputName = "screenCapture-"+formatedTime()+".mp4";
     double start_clock = clock();
     double length =0 ;
     cout << "total time ( s ): ";
@@ -38,7 +50,7 @@ int main(){
         if(cur_clock - start_clock > length ) break;
         system(formatImportCommand(delay,imageNumber++).c_str());
     }
-    system("ffmpeg -framerate 15 -i .screenshot-%05d.jpg -c:v libx264 -profile:v high -crf 20 -pix_fmt yuv420p output1.mp4");
+    system(("ffmpeg -framerate 15 -i .screenshot-%05d.jpg -c:v libx264 -profile:v high -crf 20 -pix_fmt yuv420p " + outputName).c_str());
     system("rm .screenshot-*");
     return 0;
 }
