@@ -1,12 +1,11 @@
-// sudo apt-get update
-// sudo apt-get install ffmpeg
-
 #include <bits/stdc++.h>
 #include <time.h>
+#include <unistd.h>
 using namespace std;
 #define MAX_NAME_SIZE 1024
 
-
+// sudo apt-get update
+// sudo apt-get install ffmpeg
 
 string imageName(int num){
     char str[MAX_NAME_SIZE];
@@ -33,24 +32,31 @@ string formatedTime(){
     strftime(buf, sizeof(buf), "%Y-%m-%d_%H:%M:%S", &ts);
     return (string)buf;
 }
-int main(){
-    int imageNumber=0,delay;
-    string outputName = "screenCapture-"+formatedTime()+".mp4";
-    double start_clock = clock();
-    double length =0 ;
-    cout << "total time ( s ): ";
-    cin >> length;  length*=1000;
-    cout << length <<endl;
-
-    cout << "Gap between spanshot ( ms ) : ";
-    cin >> delay;
-    
+void startRecorder(int length, int delay,string outputName){
+    int imageNumber = 0 , start_time = time(NULL);
     while(true){
-        double cur_clock = clock();
-        if(cur_clock - start_clock > length ) break;
-        system(formatImportCommand(delay,imageNumber++).c_str());
+        int cur_time = time(NULL);
+        if(cur_time - start_time > length ) break;
+        system(formatImportCommand(20,imageNumber++).c_str());
+        usleep(delay);
     }
     system(("ffmpeg -framerate 15 -i .screenshot-%05d.jpg -c:v libx264 -profile:v high -crf 20 -pix_fmt yuv420p " + outputName).c_str());
-    system("rm .screenshot-*");
+    system("rm .screenshot-*"); 
+
+}
+string makeOutputFileName(){
+    return "screenCapture-"+formatedTime()+".mp4";
+}
+int main(){
+    int delay,length=0;
+
+    cout << "total time ( s ): ";
+    cin >> length; 
+    cout << length <<endl;
+    cout << "Gap between spanshot ( ms ) : ";
+    cin >> delay;
+
+    startRecorder(length,delay*1000,makeOutputFileName());
+   
     return 0;
 }
